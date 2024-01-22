@@ -18,7 +18,7 @@ int main(void) {
     double y =  3.;
 
     /* Try changing x,y randomly small amounts and keep track of what works best */
-    double tweak_amount = 0.01;
+    double h = 0.0001;
     double best_out = -DBL_MAX;
     double best_x = x;
     double best_y = y;
