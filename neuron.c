@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+
 typedef struct unit {
     double value;
     double grad;
