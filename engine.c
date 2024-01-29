@@ -181,8 +181,7 @@ int main(void) {
     srand(time(0));
     double step_size = 0.01;
     /* Dataset */
-    double data[6][2] = {
-        { 1.2,  0.7},
+    double data[5][2] = {
         {-0.3, -0.5},
         { 3.0,  0.1},
         {-0.1, -1.0},
@@ -190,7 +189,7 @@ int main(void) {
         { 2.1, -3.0},
     };
 
-    int labels[6] = {1, -1, 1, -1, -1, 1};
+    int labels[5] = {-1, 1, -1, -1, 1};
 
     /* Random initialization */
     value* a = new_value(1.0);
@@ -203,7 +202,7 @@ int main(void) {
     
     /* Training loop */ 
     for (int iter = 0; iter < 400; iter++) {
-        int i = rand() % 6;
+        int i = rand() % 5;
         x->data = data[i][0];
         y->data = data[i][1];
         int label = labels[i];
@@ -225,7 +224,7 @@ int main(void) {
         
         if (iter % 25 == 0) {
             int num_correct = 0;
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < 5; j++) {
                 x->data = data[j][0];
                 y->data = data[j][1];
                 int true_label = labels[j];
@@ -235,7 +234,7 @@ int main(void) {
                     num_correct++;
                 }
             }
-            printf("training accuracy at iter %d: %.4f\n", iter, ((double) num_correct) / 6.0);
+            printf("training accuracy at iter %d: %.4f\n", iter, ((double) num_correct) / 5.0);
         }
 
     }
