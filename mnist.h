@@ -1,8 +1,10 @@
+#ifndef MNIST_H
+#define MNIST_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <time.h>
 
 #define TRAIN_IMAGES "./data/train-images-idx3-ubyte"
 #define TRAIN_LABELS "./data/train-labels-idx1-ubyte"
@@ -17,7 +19,6 @@
 #define MNIST_IMAGE_WIDTH 28
 #define MNIST_IMAGE_HEIGHT 28
 #define MNIST_IMAGE_SIZE MNIST_IMAGE_WIDTH * MNIST_IMAGE_HEIGHT
-
 typedef struct {
     uint8_t pixels[MNIST_IMAGE_SIZE];
 } mnist_image_t;
@@ -118,24 +119,35 @@ uint8_t *read_labels(char* labels_path) {
     return labels;
 }
 
-
-int main(void) {
-
+mnist_dataset_t *build_train_dataset(void) {
     mnist_dataset_t *train_dataset = malloc(sizeof(train_dataset));
 
     mnist_image_t *images = read_images(TRAIN_IMAGES);
     uint8_t *labels = read_labels(TRAIN_LABELS);
     
-    train_dataset->size = NUMBER_IMAGES_TRAIN;
     train_dataset->images = images;
     train_dataset->labels = labels;
 
-    srand(time(0));
-    int i = rand() % NUMBER_IMAGES_TRAIN;
-
-    printf("%d\n", train_dataset->labels[i]); 
-    print_digit(train_dataset->images[i]);
-   
-    return 0;
+    return train_dataset;
 }
 
+mnist_dataset_t *build_test_dataset(void) {
+    mnist_dataset_t *test_dataset = malloc(sizeof(test_dataset));
+
+    mnist_image_t *images = read_images(TEST_IMAGES);
+    uint8_t *labels = read_labels(TEST_LABELS);
+    
+    test_dataset->size = NUMBER_IMAGES_TEST;
+    test_dataset->images = images;
+    test_dataset->labels = labels;
+
+    return test_dataset;
+}
+
+void free_dataset(mnist_dataset_t *dataset) {
+    free(dataset->labels);
+    free(dataset->images);
+    free(dataset);
+}
+
+#endif
