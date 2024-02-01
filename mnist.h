@@ -11,7 +11,6 @@
 #define TEST_IMAGES "./data/t10k-images-idx3-ubyte"
 #define TEST_LABELS "./data/t10k-labels-idx1-ubyte"
 
-
 #define MAGIC_NUMBER_IMAGES 2051
 #define MAGIC_NUMBER_LABELS 2049
 #define NUMBER_IMAGES_TRAIN 60000
@@ -19,6 +18,7 @@
 #define MNIST_IMAGE_WIDTH 28
 #define MNIST_IMAGE_HEIGHT 28
 #define MNIST_IMAGE_SIZE MNIST_IMAGE_WIDTH * MNIST_IMAGE_HEIGHT
+
 typedef struct {
     uint8_t pixels[MNIST_IMAGE_SIZE];
 } mnist_image_t;
@@ -120,7 +120,7 @@ uint8_t *read_labels(char* labels_path) {
 }
 
 mnist_dataset_t *build_train_dataset(void) {
-    mnist_dataset_t *train_dataset = malloc(sizeof(train_dataset));
+    mnist_dataset_t *train_dataset = malloc(sizeof(mnist_dataset_t));
 
     mnist_image_t *images = read_images(TRAIN_IMAGES);
     uint8_t *labels = read_labels(TRAIN_LABELS);
