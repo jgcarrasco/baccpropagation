@@ -20,6 +20,8 @@ typedef struct {
     float b[OUTPUT_SIZE];
 } neural_network_t;
 
+typedef neural_network_t neural_network_grad_t;
+
 neural_network_t *initialize_network(void) {
     neural_network_t *nn = malloc(sizeof(neural_network_t));
     /* Initialize weight values uniformly from [-k,k] */
@@ -35,7 +37,16 @@ neural_network_t *initialize_network(void) {
     return nn;
 }
 
-void forward(neural_network_t *nn, mnist_image_t* x, float y[OUTPUT_SIZE]) {
+void zero_grad(neural_network_grad_t *grad) {
+    for (int j = 0; j < OUTPUT_SIZE; j++) {
+        for (int i = 0; i < INPUT_SIZE; i++) {
+            grad->W[i][j] = 0.;
+        }
+        grad->b[j] = 0.;
+    }
+}
+
+void forward(neural_network_t *nn, mnist_image_t *x, float y[OUTPUT_SIZE]) {
     for (int j = 0; j < OUTPUT_SIZE; j++) {
         y[j] = nn->b[j];
         for (int i = 0; i < INPUT_SIZE; i++) {
@@ -43,6 +54,8 @@ void forward(neural_network_t *nn, mnist_image_t* x, float y[OUTPUT_SIZE]) {
         }
     }
 }
+
+void backward(neural_network_grad_t *grad, mnist_image_t *x, int i_ground_truth);
 
 void print_y(float y[OUTPUT_SIZE]) {
     printf("[ ");
@@ -71,7 +84,6 @@ float cross_entropy_loss(float y[OUTPUT_SIZE], int i_ground_truth) {
     return loss;
 }
 
-
 int main(void) {
 
     mnist_dataset_t *train_dataset = build_train_dataset();
@@ -79,7 +91,6 @@ int main(void) {
     neural_network_t *nn = initialize_network();
     
     srand(time(0));
-    // int i = rand() % NUMBER_IMAGES_TEST;
 
     float y[OUTPUT_SIZE];
 
