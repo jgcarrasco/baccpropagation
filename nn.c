@@ -51,24 +51,23 @@ void print_y(float y[OUTPUT_SIZE]) {
     printf(" ]\n");
 }
 
-void substract_max(float y[OUTPUT_SIZE]) {
+float max(float y[OUTPUT_SIZE]) {
     float m = FLT_MIN;
     for (int i = 0; i < OUTPUT_SIZE; i++) {
         if (y[i] > m)
             m = y[i];
     }
-    for (int i = 0; i < OUTPUT_SIZE; i++) {
-        y[i] -= m;
-    }
+    return m;
 }
 
 float cross_entropy_loss(float y[OUTPUT_SIZE], int i_ground_truth) {
+    float m = max(y);
     float loss = 0.;
     for (int i = 0; i < OUTPUT_SIZE; i++) {
-        loss += exp(y[i]);
+        loss += exp(y[i] - m);
     }
     loss = log(loss);
-    loss -= y[i_ground_truth];
+    loss -= y[i_ground_truth] - m;
     return loss;
 }
 
