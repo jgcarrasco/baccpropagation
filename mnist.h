@@ -125,6 +125,7 @@ mnist_dataset_t *build_train_dataset(void) {
     mnist_image_t *images = read_images(TRAIN_IMAGES);
     uint8_t *labels = read_labels(TRAIN_LABELS);
     
+    train_dataset->size = NUMBER_IMAGES_TRAIN;
     train_dataset->images = images;
     train_dataset->labels = labels;
 
