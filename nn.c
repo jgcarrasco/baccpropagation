@@ -70,6 +70,15 @@ float max(float y[OUTPUT_SIZE]) {
     return m;
 }
 
+int get_i_max(float y[OUTPUT_SIZE]) {
+    int i_max = 0;
+    for (int i = 1; i < OUTPUT_SIZE; i++) {
+        if (y[i] > y[i_max])
+            i_max = i;
+    }
+    return i_max;
+}
+
 void forward(neural_network_t *nn, mnist_image_t *x, float y[OUTPUT_SIZE]) {
     for (int j = 0; j < OUTPUT_SIZE; j++) {
         y[j] = nn->b[j];
@@ -128,6 +137,22 @@ float validate(neural_network_t *nn, mnist_dataset_t *test_dataset) {
     return loss;
 }
 
+float validate_acc(neural_network_t *nn, mnist_dataset_t *test_dataset) {
+    float y[OUTPUT_SIZE];
+
+    float acc = 0.0;
+    int i_max;
+    for (int i = 0; i < test_dataset->size; i++) {
+        forward(nn, &test_dataset->images[i], y);
+        i_max = get_i_max(y);
+        if (test_dataset->labels[i] == i_max)
+            acc += 1.0;
+    }
+    acc /= test_dataset->size;
+    
+    return acc;
+}
+
 void step(neural_network_t *nn, neural_network_grad_t *grad, float step_size) {
     for (int j = 0; j < OUTPUT_SIZE; j++) {
         nn->b[j] -= step_size * grad->b[j];
@@ -143,7 +168,13 @@ int main(void) {
     mnist_dataset_t *test_dataset = build_test_dataset();
     neural_network_t *nn = initialize_network();
     neural_network_grad_t *grad = malloc(sizeof(neural_network_grad_t));
-    
+    /* Log training data */
+    FILE *fp = fopen("logs/acc.txt", "w");
+    if (!fp) {
+        fprintf(stderr, "Couldn't open file!");
+        fclose(fp);
+        return 0;
+    }
 
     /* Sanity check: the loss at initialization should be ~ -log(1/n_classes) */
     float loss = validate(nn, test_dataset);
@@ -153,6 +184,7 @@ int main(void) {
     /* Training loop */
     srand(time(0));
     int j;
+    float acc = 0;
     float y[OUTPUT_SIZE];
     for (int i = 0; i < 10000; i++){
         j = rand() % train_dataset->size;
@@ -160,17 +192,18 @@ int main(void) {
         zero_grad(grad);
         backward(grad, &train_dataset->images[j], y, train_dataset->labels[j]);
         step(nn, grad, 0.001);
-        // print_grad(grad);
 
         if (i % 100 == 0) {
-            loss = validate(nn, train_dataset);
-            printf("Test loss on i=%d: %.4f\n", i, loss); 
+            acc = validate_acc(nn, test_dataset);
+            printf("Test accuracy on i=%d: %.4f\n", i, acc); 
+            fprintf(fp, "%d\t%.4f\n", i, acc);
         }
     }
 
     free_dataset(train_dataset);
     free_dataset(test_dataset);
     free(nn);
+    fclose(fp);
     return 0;
 }
 
